@@ -679,7 +679,8 @@ function Window:_buildSidebar(o)
         ZIndex = 7,
     })
     self.TabPill.Root.Visible = false
-endfunction Window:_buildMain(o)
+    end
+function Window:_buildMain(o)
     local main = new("Frame", {Name = "Main", BackgroundTransparency = 1, ZIndex = 3, Parent = self.Body})
     self.Main = main
     self.Header = new("Frame", {Name = "Header", BackgroundTransparency = 1,
