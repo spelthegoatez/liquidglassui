@@ -1,10 +1,10 @@
 --!strict
--- LiquidGlass UI Library (fixed)
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
-local Lighting = game:GetService("Lighting")
-local RunService = game:GetService("RunService")
+-- LiquidGlass UI Library v2 (fixed)
+local TweenService       = game:GetService("TweenService")
+local UserInputService   = game:GetService("UserInputService")
+local Players            = game:GetService("Players")
+local Lighting           = game:GetService("Lighting")
+local RunService         = game:GetService("RunService")
 
 local Library = {}
 Library.__index = Library
@@ -13,17 +13,17 @@ Library.__index = Library
 -- THEME
 -- ============================================================
 local Theme = {
-    Glass         = Color3.fromRGB(255, 255, 255),
-    GlassDark     = Color3.fromRGB(180, 200, 255),
-    Background    = Color3.fromRGB(20, 22, 34),
-    Background2   = Color3.fromRGB(30, 34, 56),
-    Border        = Color3.fromRGB(255, 255, 255),
-    Text          = Color3.fromRGB(245, 248, 255),
-    TextDim       = Color3.fromRGB(160, 170, 200),
-    Accent        = Color3.fromRGB(120, 180, 255),
-    Accent2       = Color3.fromRGB(180, 120, 255),
-    Success       = Color3.fromRGB(110, 240, 180),
-    Danger        = Color3.fromRGB(255, 110, 130),
+    Glass       = Color3.fromRGB(255, 255, 255),
+    GlassDark   = Color3.fromRGB(180, 200, 255),
+    Background  = Color3.fromRGB(20, 22, 34),
+    Background2 = Color3.fromRGB(30, 34, 56),
+    Border      = Color3.fromRGB(255, 255, 255),
+    Text        = Color3.fromRGB(245, 248, 255),
+    TextDim     = Color3.fromRGB(160, 170, 200),
+    Accent      = Color3.fromRGB(120, 180, 255),
+    Accent2     = Color3.fromRGB(180, 120, 255),
+    Success     = Color3.fromRGB(110, 240, 180),
+    Danger      = Color3.fromRGB(255, 110, 130),
 }
 
 local Fonts = {
@@ -80,17 +80,6 @@ local function listLayout(p, pad, dir)
         Parent = p,
     })
 end
-local function grad(p, from, to, rot, transFrom, transTo)
-    return new("UIGradient", {
-        Color = ColorSequence.new(from, to),
-        Rotation = rot or 90,
-        Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, transFrom or 0),
-            NumberSequenceKeypoint.new(1, transTo or 0),
-        }),
-        Parent = p,
-    })
-end
 
 local function makeDraggable(frame, handle)
     handle = handle or frame
@@ -116,7 +105,7 @@ local function makeDraggable(frame, handle)
 end
 
 -- ============================================================
--- BLUR CONTROLLER
+-- BLUR
 -- ============================================================
 local Blur = {}
 Blur.__index = Blur
@@ -200,7 +189,7 @@ function Blur:Destroy()
 end
 
 -- ============================================================
--- LIBRARY CONSTRUCTOR
+-- CONSTRUCTOR
 -- ============================================================
 function Library.new(title)
     local self = setmetatable({}, Library)
@@ -233,8 +222,7 @@ function Library:_build()
     })
     corner(self.root, 14)
 
-    -- Main glass gradient overlay
-    local rootGrad = new("UIGradient", {
+    new("UIGradient", {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Theme.Glass),
             ColorSequenceKeypoint.new(0.5, Color3.fromRGB(200, 220, 255)),
@@ -248,7 +236,6 @@ function Library:_build()
         Parent = self.root,
     })
 
-    -- Glowing gradient border
     local rootStroke = stroke(self.root, Theme.Border, 0.5, 1.5)
     new("UIGradient", {
         Color = ColorSequence.new({
@@ -260,7 +247,6 @@ function Library:_build()
         Parent = rootStroke,
     })
 
-    -- Top specular highlight
     local sheen = new("Frame", {
         BackgroundColor3 = Color3.new(1,1,1),
         BackgroundTransparency = 1,
@@ -280,7 +266,6 @@ function Library:_build()
         Parent = sheen,
     })
 
-    -- Top bar
     self.topBar = new("Frame", {
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 0, 46),
@@ -288,25 +273,17 @@ function Library:_build()
     })
 
     new("TextLabel", {
-        FontFace = Fonts.Bold,
-        TextColor3 = Theme.Text,
-        Text = self.title,
-        BackgroundTransparency = 1,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextSize = 16,
-        Position = UDim2.new(0, 18, 0, 14),
-        Size = UDim2.new(0, 200, 0, 20),
-        Parent = self.topBar,
+        FontFace = Fonts.Bold, TextColor3 = Theme.Text, Text = self.title,
+        BackgroundTransparency = 1, TextXAlignment = Enum.TextXAlignment.Left,
+        TextSize = 16, Position = UDim2.new(0, 18, 0, 14),
+        Size = UDim2.new(0, 200, 0, 20), Parent = self.topBar,
     })
 
-    -- Divider with gradient
     local divider = new("Frame", {
-        BackgroundColor3 = Theme.Border,
-        BackgroundTransparency = 0.85,
+        BackgroundColor3 = Theme.Border, BackgroundTransparency = 0.85,
         Size = UDim2.new(1, -20, 0, 1),
         Position = UDim2.new(0, 10, 0, 46),
-        BorderSizePixel = 0,
-        Parent = self.root,
+        BorderSizePixel = 0, Parent = self.root,
     })
     new("UIGradient", {
         Color = ColorSequence.new(Color3.new(1,1,1)),
@@ -319,26 +296,18 @@ function Library:_build()
         Parent = divider,
     })
 
-    -- Close button
     local close = new("TextButton", {
-        Text = "X",
-        FontFace = Fonts.Bold,
-        TextColor3 = Theme.TextDim,
-        TextSize = 15,
-        BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, -14, 0, 14),
-        Size = UDim2.new(0, 20, 0, 20),
-        Parent = self.topBar,
+        Text = "X", FontFace = Fonts.Bold, TextColor3 = Theme.TextDim,
+        TextSize = 15, BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -14, 0, 14),
+        Size = UDim2.new(0, 20, 0, 20), Parent = self.topBar,
     })
     close.MouseEnter:Connect(function() tw(close, {TextColor3 = Theme.Danger}, Anim.Fast) end)
     close.MouseLeave:Connect(function() tw(close, {TextColor3 = Theme.TextDim}, Anim.Fast) end)
     close.MouseButton1Click:Connect(function() self:Destroy() end)
 
-    -- Tab bar
     self.tabBar = new("ScrollingFrame", {
-        BackgroundTransparency = 1,
-        ScrollBarThickness = 0,
+        BackgroundTransparency = 1, ScrollBarThickness = 0,
         Position = UDim2.new(0, 10, 0, 58),
         Size = UDim2.new(0, Sizes.TabW, 1, -70),
         CanvasSize = UDim2.new(0,0,0,0),
@@ -348,14 +317,10 @@ function Library:_build()
     listLayout(self.tabBar, 4)
     padding(self.tabBar, 4, 4, 0, 0)
 
-    -- Separator
     local sep = new("Frame", {
-        BackgroundColor3 = Theme.Border,
-        BackgroundTransparency = 0.88,
+        BackgroundColor3 = Theme.Border, BackgroundTransparency = 0.88,
         Position = UDim2.new(0, Sizes.TabW + 12, 0, 58),
-        Size = UDim2.new(0, 1, 1, -70),
-        BorderSizePixel = 0,
-        Parent = self.root,
+        Size = UDim2.new(0, 1, 1, -70), BorderSizePixel = 0, Parent = self.root,
     })
     new("UIGradient", {
         Rotation = 90,
@@ -367,11 +332,9 @@ function Library:_build()
         Parent = sep,
     })
 
-    -- Content
     self.content = new("ScrollingFrame", {
         BackgroundTransparency = 1,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Theme.Accent,
+        ScrollBarThickness = 3, ScrollBarImageColor3 = Theme.Accent,
         Position = UDim2.new(0, Sizes.TabW + 22, 0, 58),
         Size = UDim2.new(1, -(Sizes.TabW + 32), 1, -70),
         CanvasSize = UDim2.new(0,0,0,0),
@@ -381,7 +344,6 @@ function Library:_build()
     listLayout(self.content, 8)
     padding(self.content, 4, 8, 4, 8)
 
-    -- Keybind listener
     UserInputService.InputBegan:Connect(function(input, processed)
         if processed then return end
         if input.KeyCode == self._toggleKey then self:Toggle() end
@@ -391,7 +353,6 @@ function Library:_build()
     end)
 
     makeDraggable(self.root, self.topBar)
-
     self.gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
     self.blur = Blur.new(self.root)
 end
@@ -450,8 +411,8 @@ function Library:Notify(cfg)
     new("TextLabel", {
         FontFace = Fonts.Bold, TextColor3 = Theme.Text, Text = title,
         TextXAlignment = Enum.TextXAlignment.Left, BackgroundTransparency = 1,
-        Position = UDim2.new(0, 12, 0, 8), Size = UDim2.new(1, -20, 0, 20), TextSize = 14,
-        Parent = n,
+        Position = UDim2.new(0, 12, 0, 8), Size = UDim2.new(1, -20, 0, 20),
+        TextSize = 14, Parent = n,
     })
     new("TextLabel", {
         FontFace = Fonts.Reg, TextColor3 = Theme.TextDim, Text = desc,
@@ -554,7 +515,7 @@ function Library:_selectTab(tab)
 end
 
 -- ============================================================
--- GLASS ROW BASE
+-- ROW BASE
 -- ============================================================
 local function glassRow(parent, height)
     local row = new("Frame", {
@@ -579,8 +540,7 @@ local function glassRow(parent, height)
         Parent = row,
     })
     local sheen = new("Frame", {
-        BackgroundColor3 = Color3.new(1,1,1),
-        BackgroundTransparency = 1,
+        BackgroundColor3 = Color3.new(1,1,1), BackgroundTransparency = 1,
         Size = UDim2.new(1, -4, 0, 10),
         Position = UDim2.new(0, 2, 0, 2),
         BorderSizePixel = 0, Parent = row,
@@ -618,22 +578,15 @@ function Library._toggle(tab, cfg)
     rowLabel(row, name)
 
     local sw = new("Frame", {
-        BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 0.2,
-        AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -14, 0.5, 0),
+        BackgroundColor3 = Theme.Background, BackgroundTransparency = 0.2,
+        AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0),
         Size = UDim2.new(0, Sizes.ToggleW, 0, Sizes.ToggleH),
-        BorderSizePixel = 0,
-        Parent = row,
+        BorderSizePixel = 0, Parent = row,
     })
-    corner(sw, 100)
-    stroke(sw, Theme.Border, 0.6, 1)
-
+    corner(sw, 100); stroke(sw, Theme.Border, 0.6, 1)
     local swGrad = new("UIGradient", {
         Color = ColorSequence.new(Theme.Accent, Theme.Accent2),
-        Rotation = 0,
-        Enabled = state,
-        Parent = sw,
+        Rotation = 0, Enabled = state, Parent = sw,
     })
 
     local knob = new("Frame", {
@@ -641,8 +594,7 @@ function Library._toggle(tab, cfg)
         Position = state and UDim2.new(0, Sizes.ToggleW - Sizes.Knob - 3, 0.5, -Sizes.Knob/2)
                        or UDim2.new(0, 3, 0.5, -Sizes.Knob/2),
         Size = UDim2.new(0, Sizes.Knob, 0, Sizes.Knob),
-        BorderSizePixel = 0,
-        Parent = sw,
+        BorderSizePixel = 0, Parent = sw,
     })
     corner(knob, 100)
     new("UIStroke", {Color = Color3.new(0,0,0), Transparency = 0.85, Thickness = 1, Parent = knob})
@@ -662,10 +614,7 @@ function Library._toggle(tab, cfg)
     end
     apply()
 
-    btn.MouseButton1Click:Connect(function()
-        state = not state; apply(); cb(state)
-    end)
-
+    btn.MouseButton1Click:Connect(function() state = not state; apply(); cb(state) end)
     return {
         Set = function(_, v) state = v; apply(); cb(state) end,
         Get = function() return state end,
@@ -694,34 +643,25 @@ function Library._slider(tab, cfg)
     })
 
     local track = new("Frame", {
-        BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 0.25,
+        BackgroundColor3 = Theme.Background, BackgroundTransparency = 0.25,
         Position = UDim2.new(0, 14, 0, 36),
-        Size = UDim2.new(1, -28, 0, 6),
-        BorderSizePixel = 0,
-        Parent = row,
+        Size = UDim2.new(1, -28, 0, 6), BorderSizePixel = 0, Parent = row,
     })
     corner(track, 100)
 
     local fill = new("Frame", {
         BackgroundColor3 = Theme.Accent,
         Size = UDim2.new((val - min) / (max - min), 0, 1, 0),
-        BorderSizePixel = 0,
-        Parent = track,
+        BorderSizePixel = 0, Parent = track,
     })
     corner(fill, 100)
-    new("UIGradient", {
-        Color = ColorSequence.new(Theme.Accent, Theme.Accent2),
-        Parent = fill,
-    })
+    new("UIGradient", {Color = ColorSequence.new(Theme.Accent, Theme.Accent2), Parent = fill})
 
     local knob = new("Frame", {
         BackgroundColor3 = Color3.new(1,1,1),
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.new((val - min)/(max-min), 0, 0.5, 0),
-        Size = UDim2.new(0, 14, 0, 14),
-        BorderSizePixel = 0,
-        Parent = track,
+        Size = UDim2.new(0, 14, 0, 14), BorderSizePixel = 0, Parent = track,
     })
     corner(knob, 100)
     new("UIStroke", {Color = Theme.Accent, Transparency = 0.2, Thickness = 2, Parent = knob})
@@ -805,16 +745,11 @@ function Library._dropdown(tab, cfg)
         Text = tostring(selected), FontFace = Fonts.Reg,
         TextColor3 = Theme.Text, TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
-        BackgroundColor3 = Theme.Background,
-        BackgroundTransparency = 0.35,
-        AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -14, 0.5, 0),
-        Size = UDim2.new(0, 180, 0, 28),
-        ZIndex = 3,
-        Parent = row,
+        BackgroundColor3 = Theme.Background, BackgroundTransparency = 0.35,
+        AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0),
+        Size = UDim2.new(0, 180, 0, 28), ZIndex = 3, Parent = row,
     })
-    corner(display, 8)
-    stroke(display, Theme.Border, 0.7, 1)
+    corner(display, 8); stroke(display, Theme.Border, 0.7, 1)
     padding(display, 0, 0, 10, 22)
 
     local arrow = new("TextLabel", {
@@ -825,20 +760,15 @@ function Library._dropdown(tab, cfg)
     })
 
     local list = new("ScrollingFrame", {
-        BackgroundColor3 = Theme.Background2,
-        BackgroundTransparency = 0.15,
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 1, 4),
+        BackgroundColor3 = Theme.Background2, BackgroundTransparency = 0.15,
+        BorderSizePixel = 0, Position = UDim2.new(0, 0, 1, 4),
         Size = UDim2.new(1, 0, 0, math.min(#opts * 28, 140)),
         CanvasSize = UDim2.new(0,0,0,#opts*28),
-        Visible = false,
-        ZIndex = 100,
-        ScrollBarThickness = 3,
-        ScrollBarImageColor3 = Theme.Accent,
+        Visible = false, ZIndex = 100,
+        ScrollBarThickness = 3, ScrollBarImageColor3 = Theme.Accent,
         Parent = row,
     })
-    corner(list, 8)
-    stroke(list, Theme.Border, 0.6, 1)
+    corner(list, 8); stroke(list, Theme.Border, 0.6, 1)
     listLayout(list, 0)
 
     local function addOption(opt)
@@ -852,19 +782,15 @@ function Library._dropdown(tab, cfg)
         o.MouseEnter:Connect(function() tw(o, {BackgroundTransparency = 0.7}, Anim.Fast) end)
         o.MouseLeave:Connect(function() tw(o, {BackgroundTransparency = 1}, Anim.Fast) end)
         o.MouseButton1Click:Connect(function()
-            selected = opt
-            display.Text = tostring(opt)
-            cb(opt)
-            open = false
-            list.Visible = false
+            selected = opt; display.Text = tostring(opt); cb(opt)
+            open = false; list.Visible = false
             tw(arrow, {Rotation = 0}, Anim.Fast)
         end)
     end
     for _, o in ipairs(opts) do addOption(o) end
 
     display.MouseButton1Click:Connect(function()
-        open = not open
-        list.Visible = open
+        open = not open; list.Visible = open
         tw(arrow, {Rotation = open and 180 or 0}, Anim.Fast)
     end)
 
@@ -900,11 +826,8 @@ function Library._textbox(tab, cfg)
         FontFace = Fonts.Reg, TextColor3 = Theme.Text, TextSize = 12,
         TextXAlignment = Enum.TextXAlignment.Left,
         BackgroundColor3 = Theme.Background, BackgroundTransparency = 0.35,
-        AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -14, 0.5, 0),
-        Size = UDim2.new(0, 180, 0, 28),
-        ClearTextOnFocus = false,
-        Parent = row,
+        AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0),
+        Size = UDim2.new(0, 180, 0, 28), ClearTextOnFocus = false, Parent = row,
     })
     corner(box, 8)
     local bs = stroke(box, Theme.Border, 0.7, 1)
@@ -938,24 +861,20 @@ function Library._keybind(tab, cfg)
     local box = new("TextButton", {
         Text = key.Name, FontFace = Fonts.Bold, TextColor3 = Theme.Text, TextSize = 12,
         BackgroundColor3 = Theme.Background, BackgroundTransparency = 0.35,
-        AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -14, 0.5, 0),
-        Size = UDim2.new(0, 70, 0, 26),
-        Parent = row,
+        AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0),
+        Size = UDim2.new(0, 70, 0, 26), Parent = row,
     })
     corner(box, 8); stroke(box, Theme.Border, 0.7, 1)
 
-    local id = tostring(tick()) .. name
+    local id = tostring(math.floor(tick() * 1000)) .. name
     tab._lib._keybinds[id] = { key = key, cb = cb }
 
     box.MouseButton1Click:Connect(function()
-        listening = true
-        box.Text = "..."
+        listening = true; box.Text = "..."
     end)
     UserInputService.InputBegan:Connect(function(input)
         if listening and input.UserInputType == Enum.UserInputType.Keyboard then
-            key = input.KeyCode
-            listening = false
+            key = input.KeyCode; listening = false
             box.Text = key.Name
             tab._lib._keybinds[id].key = key
         end
@@ -980,11 +899,9 @@ function Library._colorpicker(tab, cfg)
     rowLabel(row, name)
 
     local prev = new("Frame", {
-        BackgroundColor3 = col,
-        AnchorPoint = Vector2.new(1, 0.5),
+        BackgroundColor3 = col, AnchorPoint = Vector2.new(1, 0.5),
         Position = UDim2.new(1, -14, 0.5, 0),
-        Size = UDim2.new(0, 40, 0, 20),
-        Parent = row,
+        Size = UDim2.new(0, 40, 0, 20), Parent = row,
     })
     corner(prev, 6); stroke(prev, Theme.Border, 0.4, 1)
 
@@ -997,8 +914,7 @@ function Library._colorpicker(tab, cfg)
 
     local sv = new("Frame", {
         BackgroundColor3 = Color3.fromHSV(h,1,1),
-        Position = UDim2.new(0, 8, 0, 8),
-        Size = UDim2.new(1, -16, 0, 90),
+        Position = UDim2.new(0, 8, 0, 8), Size = UDim2.new(1, -16, 0, 90),
         ZIndex = 201, Parent = popup,
     })
     corner(sv, 6)
@@ -1015,8 +931,7 @@ function Library._colorpicker(tab, cfg)
     local bl = new("Frame", {BackgroundColor3 = Color3.new(0,0,0), Size = UDim2.new(1,0,1,0), ZIndex = 203, Parent = sv})
     corner(bl, 6)
     new("UIGradient", {
-        Color = ColorSequence.new(Color3.new(0,0,0)),
-        Rotation = 90,
+        Color = ColorSequence.new(Color3.new(0,0,0)), Rotation = 90,
         Transparency = NumberSequence.new({
             NumberSequenceKeypoint.new(0,1), NumberSequenceKeypoint.new(1,0),
         }), Parent = bl,
@@ -1024,16 +939,15 @@ function Library._colorpicker(tab, cfg)
 
     local cursor = new("Frame", {
         BackgroundColor3 = Color3.new(1,1,1), BackgroundTransparency = 1,
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(s, 0, 1-v, 0),
+        AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(s, 0, 1-v, 0),
         Size = UDim2.new(0, 10, 0, 10), ZIndex = 205, Parent = sv,
     })
     corner(cursor, 100)
     new("UIStroke", {Color = Color3.new(1,1,1), Thickness = 1.5, Parent = cursor})
 
     local hueBar = new("Frame", {
-        Position = UDim2.new(0, 8, 1, -24),
-        Size = UDim2.new(1, -16, 0, 10), ZIndex = 201, Parent = popup,
+        Position = UDim2.new(0, 8, 1, -24), Size = UDim2.new(1, -16, 0, 10),
+        ZIndex = 201, Parent = popup,
     })
     corner(hueBar, 100)
     new("UIGradient", {
@@ -1045,14 +959,12 @@ function Library._colorpicker(tab, cfg)
             ColorSequenceKeypoint.new(0.67, Color3.fromHSV(0.67,1,1)),
             ColorSequenceKeypoint.new(0.83, Color3.fromHSV(0.83,1,1)),
             ColorSequenceKeypoint.new(1, Color3.fromHSV(1,1,1)),
-        }),
-        Parent = hueBar,
+        }), Parent = hueBar,
     })
     local hueCur = new("Frame", {
-        BackgroundColor3 = Color3.new(1,1,1),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(h, 0, 0.5, 0),
-        Size = UDim2.new(0, 10, 0, 10), ZIndex = 205, Parent = hueBar,
+        BackgroundColor3 = Color3.new(1,1,1), AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(h, 0, 0.5, 0), Size = UDim2.new(0, 10, 0, 10),
+        ZIndex = 205, Parent = hueBar,
     })
     corner(hueCur, 100)
     new("UIStroke", {Color = Color3.fromRGB(20,20,20), Thickness = 1, Parent = hueCur})
@@ -1111,8 +1023,7 @@ function Library._label(tab, cfg)
     rowLabel(row, cfg.Name or "Label")
     local dot = new("Frame", {
         BackgroundColor3 = cfg.Color or Theme.Success,
-        AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -14, 0.5, 0),
+        AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0),
         Size = UDim2.new(0, 8, 0, 8), Parent = row,
     })
     corner(dot, 100)
